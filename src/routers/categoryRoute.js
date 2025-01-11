@@ -1,9 +1,17 @@
 import express from "express";
-import { listCategory } from "../controller/categoryController.js";
+import { listCategory, 
+    createCategory ,
+    renderpageCreateCategory,
+    renderpageUpdateCategory,
+    updateCategory} from "../controller/categoryController.js";
 const router = express.Router();
 
 router.get("/", listCategory)
-router.post("/create", function(req, res) {
-    res.send("create categories");
-})
+
+router.get("/create", renderpageCreateCategory)// đọc ra form create
+router.post("/create", createCategory)
+
+router.get("/update/:id", renderpageUpdateCategory)
+router.post("/update/:id", updateCategory)
+
 export default router;
