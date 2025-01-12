@@ -12,6 +12,6 @@ router.get("/create", renderpageCreateCategory)// đọc ra form create
 router.post("/create", createCategory)
 
 router.get("/update/:id", renderpageUpdateCategory)
-router.post("/update/:id", updateCategory)
+router.post("/update/", updateCategory)
 
 export default router;

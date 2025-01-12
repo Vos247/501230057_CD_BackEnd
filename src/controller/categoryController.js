@@ -14,7 +14,8 @@ export async function listCategory(req, res){
 export async function renderpageCreateCategory(req, res){
     res.render("pages/categories/form", {
         title: "Create categories",
-        mode: "Create"
+        mode: "Create",
+        category: {}
     });
 }
 export async function createCategory(req, res){
@@ -39,7 +40,7 @@ export async function renderpageUpdateCategory(req, res){
         category: category
     });
     }else {
-        res.send("Không tìm thấy sản phẩm");
+        res.send("Không thấy sản phẩm nào phù hợp");
     }
 }
 export async function updateCategory(req, res){
@@ -51,10 +52,9 @@ export async function updateCategory(req, res){
        code,
         name, 
         image, 
-        createAt: new Date()
+        updateAt: new Date()
     });
-    res.send("Cập nhật thành công");
-    // res.redirect("/categories")
+    res.redirect("/categories")
     }catch(e){
     res.send("Cập nhật sản phẩm không thành công");
     }
