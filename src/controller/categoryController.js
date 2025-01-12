@@ -2,7 +2,7 @@ import CategoryModel from "../models/categoryModel.js";
 import { ObjectId } from "mongodb";
 export async function listCategory(req, res){
     try {
-    const categories = await CategoryModel.find();
+    const categories = await CategoryModel.find({deleteAt: null});
     res.render("pages/categories/list", {
         title: "categories",
         categories: categories,
@@ -31,8 +31,9 @@ export async function createCategory(req, res){
 }
 
 export async function renderpageUpdateCategory(req, res){
-    const {id} = req.params;
-    const category = await CategoryModel.findOne({_id: new ObjectId(id)});
+    try {
+        const {id} = req.params;
+    const category = await CategoryModel.findOne({_id: new ObjectId(id), deleteAt: null});
     if(category) {
         res.render("pages/categories/form", {
         title: "update categories",
@@ -41,6 +42,9 @@ export async function renderpageUpdateCategory(req, res){
     });
     }else {
         res.send("Không thấy sản phẩm nào phù hợp");
+    }
+    }catch(e){
+        res.send("Trang web không tồn tại!");
     }
 }
 export async function updateCategory(req, res){
@@ -53,6 +57,37 @@ export async function updateCategory(req, res){
         name, 
         image, 
         updateAt: new Date()
+    });
+    res.redirect("/categories")
+    }catch(e){
+    res.send("Cập nhật sản phẩm không thành công");
+    }
+}
+
+export async function renderpageDeleteCategory(req, res){
+   try {
+    const {id} = req.params;
+    const category = await CategoryModel.findOne({_id: new ObjectId(id), deleteAt: null});
+    if(category) {
+        res.render("pages/categories/form", {
+        title: "Delete categories",
+        mode: "Delete",
+        category: category
+    });
+    }else {
+        res.send("Không thấy sản phẩm nào phù hợp");
+    }
+   }catch(e){
+    res.send("Trang web không tồn tại!");
+   }
+}
+export async function deleteCategory(req, res){
+    const {id} = req.body;
+    try {
+    await CategoryModel.deleteOne(
+        {_id: new ObjectId(id)},
+        {
+            updateAt: new Date()
     });
     res.redirect("/categories")
     }catch(e){

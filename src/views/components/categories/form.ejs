@@ -7,6 +7,9 @@
             <% if(mode === "Update") { %>
                 Cập nhật sản phẩm mới
             <% } %>
+            <% if(mode === "Delete") { %>
+                Bạn có đồng ý xóa sản phẩm <%=category?.name%>
+            <% } %>
         </h4>
         <div class="card">
             <div class="card-body">
@@ -24,6 +27,17 @@
                             id="id">
                         </div>
                 <% } %>
+                <% if(mode === "Delete") { %>
+                    <form action="/categories/delete" method="post">
+                        <div class="form-group" style="display: none;">
+                            <input 
+                            name="id"
+                            type="text"
+                            value="<%= category?._id %>" 
+                            class="form-control" 
+                            id="id">
+                        </div>
+                <% } %>
                     <div class="form-group">
                         <label for="code">Mã loại sản phẩm</label>
                         <input 
@@ -32,7 +46,9 @@
                         value="<%= category?.code %>" 
                         class="form-control" 
                         id="code" 
-                        placeholder="Nhập mã sản phẩm">
+                        placeholder="Nhập mã sản phẩm"
+                        disabled="<%=mode==='Delete' ? true : false %>"
+                        />
                     </div>
                     <div class="form-group">
                         <label for="name">Tên loại sản phẩm</label>
@@ -42,7 +58,9 @@
                         value="<%= category?.name%>" 
                         class="form-control" 
                         id="name" 
-                        placeholder="Nhập tên sản phẩm">
+                        placeholder="Nhập tên sản phẩm"
+                        disabled="<%=mode==='Delete' ? true : false %>"
+                        />
                     </div>
                     <div class="form-group">
                         <label for="image">Link loại Hình ảnh</label>
@@ -53,17 +71,20 @@
                         class="form-control" 
                         id="image" 
                         placeholder="nhập link hình ảnh"
+                        disabled="<%=mode==='Delete' ? true : false %>"
                         />
                     </div>
-
                     <div class="card-action"> 
                      <% if(mode === "Create") { %>
                         <button class="btn btn-success" type="submit">Tạo</button>
                     <% } %>
                     <% if(mode === "Update") { %>
-                        <button class="btn btn-success" type="submit">Cập nhật</button>
+                        <button class="btn btn-success" type="submit">Sửa</button>
                     <% } %>
-                        <button class="btn btn-danger" href="/categories">Trở về danh sánh sản phẩm</button>
+                    <% if(mode === "Delete") { %>
+                        <button class="btn btn-danger" type="submit">Xóa</button>
+                    <% } %>
+                        <button class="btn btn-primary" href="/categories">Trở về danh sánh sản phẩm</button>
                     </div>
                 </form>
             </div>
