@@ -5,6 +5,7 @@ const categorySchema = new Schema({
     code: String,
     name: String,
     image: String,
+    searchString: String,
     created_at:Date,
     updateAt: Date,
     deleteAt: Date,

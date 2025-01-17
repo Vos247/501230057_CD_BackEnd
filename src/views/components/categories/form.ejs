@@ -47,7 +47,7 @@
                         class="form-control" 
                         id="code" 
                         placeholder="Nhập mã sản phẩm"
-                        disabled="<%=mode==='Delete' ? true : false %>"
+                        <% if (mode === 'Delete') { %> disabled <% } %>
                         />
                     </div>
                     <div class="form-group">
@@ -59,7 +59,19 @@
                         class="form-control" 
                         id="name" 
                         placeholder="Nhập tên sản phẩm"
-                        disabled="<%=mode==='Delete' ? true : false %>"
+                        <% if (mode === 'Delete') { %> disabled <% } %>
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="name">chuỗi tìm kiếm</label>
+                        <input 
+                        name="searchString"
+                        type="text" 
+                        value="<%= category?.searchString%>" 
+                        class="form-control" 
+                        id="searchString" 
+                        placeholder="Nhập tên chuỗi tìm kiếm"
+                        <% if (mode === 'Delete') { %> disabled <% } %>
                         />
                     </div>
                     <div class="form-group">
@@ -71,8 +83,7 @@
                         class="form-control" 
                         id="image" 
                         placeholder="nhập link hình ảnh"
-                        disabled="<%=mode==='Delete' ? true : false %>"
-                        />
+                        <% if (mode === 'Delete') { %> disabled <% } %>
                     </div>
                     <div class="card-action"> 
                      <% if(mode === "Create") { %>

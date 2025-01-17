@@ -1,13 +1,21 @@
 import CategoryModel from "../models/categoryModel.js";
 import { ObjectId } from "mongodb";
+import { removeVietnameseAccents } from "../common/index.js";
 export async function listCategory(req, res){
+    const search = req.query?.search
+    const filters = {
+        deleteAt: null
+    }
+    if(search && search.length > 0){
+        filters.searchString = {$regex: removeVietnameseAccents(search), $options: "i"}
+        };
     try {
-    const categories = await CategoryModel.find({deleteAt: null});
+    const categories = await CategoryModel.find(filters);
     res.render("pages/categories/list", {
         title: "categories",
         categories: categories,
-    });
-    }catch(e){
+    })
+    } catch(e){
     res.send("Lỗi lấy danh sách category");
     }
 }
@@ -19,10 +27,10 @@ export async function renderpageCreateCategory(req, res){
     });
 }
 export async function createCategory(req, res){
-    const {code,name,image} = req.body;
+    const data = req.body;
     try {
     await CategoryModel.create({
-       code, name, image, createAt: new Date()
+       ...data, createAt: new Date()
     });
     res.redirect("/categories")
     }catch(e){
@@ -48,14 +56,12 @@ export async function renderpageUpdateCategory(req, res){
     }
 }
 export async function updateCategory(req, res){
-    const {code,name,image, id} = req.body;
+    const {id, ...data} = req.body;
     try {
     await CategoryModel.updateOne(
         {_id: new ObjectId(id)},
         {
-       code,
-        name, 
-        image, 
+            ...data,
         updateAt: new Date()
     });
     res.redirect("/categories")
