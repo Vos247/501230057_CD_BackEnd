@@ -1,41 +1,87 @@
 <div class="content">
     <div class="container-fluid">
         <div class="flex justify-content-between mb-2" style="display: flex;">
-        <h4 class="page-title">Danh sách loại sản phẩm</h4>
-        <a class="btn btn-primary mb-2" href="/categories/create">Tạo sản phẩm</a>
-    </div>
-    <% if(categories && categories.length > 0) { %>
-        <div class="card">
-            <div class="card-body">
-                <table class="table table-head-bg-success">
-                    <thead>
-                        <tr>
-                            <th scope="col">STT</th>
-                            <th scope="col">Image</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Code</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% categories.forEach(function(categories, index){ %>
-                        <tr>
-                            <td><%=index%></td>
-                            <td><img src="<%= categories.image %>" alt="" width="100px" height="100px"></td>
-                            <td><%= categories.name %></td>
-                            <td><%= categories.code %></td>
-                            <td>
-                            <a class="btn btn-primary btn-sm" href="/categories/update/<%=categories._id%>">Sửa</a>
-                            <a class="btn btn-danger btn-sm" href="/categories/delete/<%=categories._id%>">Xóa</a>
-                        </td>
-                        </tr>
+            <h4 class="page-title">Danh sách loại sản phẩm</h4>
+            <a class="btn btn-primary mb-2" href="/categories/create">Tạo sản phẩm</a>
+        </div>
+        <% if(categories && categories.length> 0) { %>
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-head-bg-success">
+                        <thead>
+                            <tr>
+                                <th scope="col">STT</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Code</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% categories.forEach(function(categories, index){ %>
+                                <tr>
+                                    <td>
+                                        <%=index%>
+                                    </td>
+                                    <td><img src="<%= categories.image %>" alt="" width="100px" height="100px"></td>
+                                    <td>
+                                        <%= categories.name %>
+                                    </td>
+                                    <td>
+                                        <%= categories.code %>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-primary btn-sm"
+                                            href="/categories/update/<%=categories._id%>">Sửa</a>
+                                        <a class="btn btn-danger btn-sm"
+                                            href="/categories/delete/<%=categories._id%>">Xóa</a>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-body" style="display: flex; justify-content: center; align-items: center;">
+                <div class="form-group" style="display: flex; align-items: center;">
+                    <label for="defaultSelect" style="white-space: nowrap; margin: 0;">Page Size</label>
+                    <select class="form-control form-control" id="defaultSelect" onchange="changePageSize(event)">
+                        <% [5,10,20,30,50].forEach(function(pageSizeOption,index){ %>  
+                            <%if(pageSizeOption === pageSize) {%>
+                                <option selected><%= pageSizeOption %></option>
+                                <%}%>   
+                                <%if(pageSizeOption !== pageSize) {%>
+                                <option><%= pageSizeOption %></option>
+                                <%}%>  
                         <% }); %>
-                    </tbody>
-                </table>
+                    </select>
+                </div>
+                    <ul class="pagination pg-primary">
+                        <li class="page-item">
+                            <a class="page-link" aria-label="Next" onclick="prevPage()">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                        </li>
+                        <% for(let i = 1; i <= countPagination; i++){ %> 
+                            <%if(page === i) {%>
+                                <li class="page-item active"><a class="page-link" href="#" onclick="changePage(`<%=i%>`)"><%=i%></a></li>  
+                            <%}%>   
+                            <%if(page !== i) {%>
+                                <li class="page-item"><a class="page-link" href="#" onclick="changePage(`<%=i%>`)"><%=i%></a></li>  
+                            <%}%>                  
+                        <% }; %>
+                        <li class="page-item">
+                            <a class="page-link" aria-label="Next" onclick="nextPage()">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    <% } else { %>
-        <h5>Hiện tại chưa có loại sản phẩm nào</h5>
-    <% } %>
+            <% } else { %>
+                <h5>Hiện tại chưa có loại sản phẩm nào</h5>
+                <% } %>
     </div>
 </div>
