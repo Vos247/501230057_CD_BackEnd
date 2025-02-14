@@ -4,6 +4,21 @@
             <h4 class="page-title">Danh sách loại sản phẩm</h4>
             <a class="btn btn-primary mb-2" href="/categories/create">Tạo sản phẩm</a>
         </div>
+        <div class="justify-content-end" style="display: flex;">
+        <div class="form-group" style="max-width: 10rem">
+            <label for="defaultSelect">Sắp xếp</label>
+            <select class="form-control form-control" id="defaultSelect" onchange="changeSort(event)">
+                <% sortObjects.forEach(function(sortObject,index){ %>
+                    <%if(sortObject.code === sort){%>
+                        <option value="<%=sortObject.code%>" selected><%=sortObject.name%></option>
+                    <%}%>
+                    <%if(sortObject.code !== sort){%>
+                        <option value="<%=sortObject.code%>"><%=sortObject.name%></option>
+                    <%}%>
+               <% }) %>
+            </select>
+        </div>
+        </div>
         <% if(categories && categories.length> 0) { %>
             <div class="card">
                 <div class="card-body">
