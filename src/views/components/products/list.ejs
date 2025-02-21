@@ -3,9 +3,8 @@
         <!-- Header Section -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="h3 fw-bold">Danh sách loại sản phẩm</h4>
-            <a class="btn btn-primary" href="/categories/create">Tạo sản phẩm</a>
+            <a class="btn btn-primary" href="/products/create">Tạo sản phẩm</a>
         </div>
-
         <!-- Sort Dropdown -->
         <div class="d-flex justify-content-end mb-4">
             <div class="form-group" style="width: 200px">
@@ -23,7 +22,7 @@
             </div>
         </div>
 
-        <% if(categories && categories.length> 0) { %>
+        <% if(products && products.length> 0) { %>
             <div class="card rounded-3 border-0 shadow-sm">
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -31,25 +30,40 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th class="px-4">STT</th>
-                                    <th class="px-4">Image</th>
-                                    <th class="px-4">Name</th>
-                                    <th class="px-4">Code</th>
-                                    <th class="px-4">Action</th>
+                                    <th class="px-4">Info</th> 
+                                    <th class="px-4">active</th>
+                                    <th class="px-4">Price</th>
+                                    <th class="px-4">Color</th>
+                                    <th class="px-4">Category</th>
+                                    <th class="px-4"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% categories.forEach(function(categories, index){ %>
+                                <% products.forEach(function(product, index){ %>
                                     <tr>
                                         <td class="px-4"><%=index%></td>
-                                        <td class="px-4">
-                                            <img src="static/assets/img/<%=categories.image%>" alt="" class="rounded" width="100" height="100">
+                                        <td>
+                                            <div class="flex" style="display: flex; align-items: center;">
+                                                <img src="static/assets/img/<%= product.images[0] %>" alt="" class="rounded" width="100" height="100">
+                                                <div style="margin-left: 10px;">
+                                                    <p><%= product.code %></p>
+                                                    <p><%= product.name %></p>
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td class="px-4"><%= categories.name %></td>
-                                        <td class="px-4"><%= categories.code %></td>
+                                        
+                                        <td><%= product.active %></td>
+                                        <td><%= product.price %></td>
+                                        <td>
+                                            <% product.colors.forEach(function(color, index){ %>
+                                                <span class="badge w-25" style="background-color: <%=color%>"> </span>
+                                            <% }) %>
+                                        </td>
+                                        <td class=""><%= product.categoryId %></td>
                                         <td class="px-4">
                                             <div class="btn-group" role="group">
-                                                <a class="btn btn-primary btn-sm me-2" href="/categories/update/<%=categories._id%>">Sửa</a>
-                                                <a class="btn btn-danger btn-sm" href="/categories/delete/<%=categories._id%>">Xóa</a>
+                                                <a class="btn btn-primary btn-sm me-2" href="/products/update/<%=product._id%>">Sửa</a>
+                                                <a class="btn btn-danger btn-sm" href="/products/delete/<%=product._id%>">Xóa</a>
                                             </div>
                                         </td>
                                     </tr>

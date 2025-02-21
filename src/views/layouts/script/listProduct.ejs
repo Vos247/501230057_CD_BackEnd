@@ -8,7 +8,7 @@
             }
         })
         queryString.push("page="+page) // Thêm tham số page mới
-        let url = "/categories?" + queryString.join("&&") // Tạo URL mới
+        let url = "/products?" + queryString.join("&&") // Tạo URL mới
         console.log("url",url) 
         window.location.href = url // Chuyển hướng đến URL mới
     }
@@ -22,7 +22,7 @@
             }
         });
         queryString.push("page=1&&pageSize="+selectedValue); // Đặt lại trang về 1 và thêm pageSize mới
-        let url = "/categories?" + queryString.join("&&")
+        let url = "/products?" + queryString.join("&&")
         window.location.href = url // Chuyển hướng đến URL mới
     }
     function setPageSize(){
@@ -52,7 +52,7 @@
             }
         });
         queryString.push("page="+nextPage); // Thêm tham số page mới
-        let url = "/categories?" + queryString.join("&&") // Tạo URL mới
+        let url = "/products?" + queryString.join("&&") // Tạo URL mới
         window.location.href = url; // Chuyển hướng đến URL mới
     }
     function prevPage(){
@@ -72,7 +72,7 @@
             }
         });
         queryString.push("page="+prevPage); // Thêm tham số page mới
-        let url = "/categories?" + queryString.join("&&") 
+        let url = "/products?" + queryString.join("&&") 
         window.location.href = url; // Chuyển hướng đến URL mới
     }
     function changeSort(event){
@@ -86,7 +86,7 @@
             }
         });
         queryString.push("sort="+ value); // Thêm tham số sort mới
-        let url = "/categories?" + queryString.join("&&")
+        let url = "/products?" + queryString.join("&&")
         window.location.href = url; // Chuyển hướng đến URL mới
     }
 </script>

@@ -17,15 +17,15 @@
                     <form action="/categories/create" method="post">
                 <% } %>
                 <% if(mode === "Update") { %>
-                    <form action="/categories/update" method="post">
-                        <div class="form-group" style="display: none;">
+                    <form action="/categories/update/<%= category?._id %>" method="post">
+                        <!-- <div class="form-group" style="display: none;">
                             <input 
                             name="id"
                             type="text"
                             value="<%= category?._id %>" 
                             class="form-control" 
                             id="id">
-                        </div>
+                        </div> -->
                 <% } %>
                 <% if(mode === "Delete") { %>
                     <form action="/categories/delete" method="post">
@@ -38,7 +38,12 @@
                             id="id">
                         </div>
                 <% } %>
-                    <div class="form-group">
+                <!-- <div class="form-group has-error has-feedback">
+                    <label for="errorInput">Error Input</label>
+                    <input type="text" id="errorInput" value="Error" class="form-control">
+                    <small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small>
+                </div> -->
+                    <div class="form-group <%=err?.code && 'has-error has-feedback'%>">
                         <label for="code">Mã loại sản phẩm</label>
                         <input 
                         name="code"
@@ -49,8 +54,9 @@
                         placeholder="Nhập mã sản phẩm"
                         <% if (mode === 'Delete') { %> disabled <% } %>
                         />
+                        <small class="form-text text-danger"><%=err?.code%></small>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group <%=err.name && 'has-error has-feedback'%>">
                         <label for="name">Tên loại sản phẩm</label>
                         <input 
                         name="name"
@@ -61,8 +67,9 @@
                         placeholder="Nhập tên sản phẩm"
                         <% if (mode === 'Delete') { %> disabled <% } %>
                         />
+                        <small class="form-text text-danger"><%=err?.name%></small>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group <%=err.searchString && 'has-error has-feedback'%>">
                         <label for="name">chuỗi tìm kiếm</label>
                         <input 
                         name="searchString"
@@ -73,8 +80,9 @@
                         placeholder="Nhập tên chuỗi tìm kiếm"
                         <% if (mode === 'Delete') { %> disabled <% } %>
                         />
+                        <small class="form-text text-danger"><%=err?.searchString%></small>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group <%=err.image && 'has-error has-feedback'%>">
                         <label for="image">Link loại Hình ảnh</label>
                         <input 
                         name="image"
@@ -84,6 +92,8 @@
                         id="image" 
                         placeholder="nhập link hình ảnh"
                         <% if (mode === 'Delete') { %> disabled <% } %>
+                        />
+                        <small class="form-text text-danger"><%=err?.image%></small>
                     </div>
                     <div class="card-action"> 
                      <% if(mode === "Create") { %>
