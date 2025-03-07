@@ -1,32 +1,31 @@
 import OrderModel from "../models/orderModel.js";
-import { ObjectId } from "mongodb";
+import ProductModel from "../models/productModel.js";
+import mongoose from "mongoose";
+const ObjectId = mongoose.Types.ObjectId;
 
 const sortObjects = [
-  { code: "name_DESC", name: "Ten giam dan" },
-  { code: "name_ASC", name: "Ten tang dan" },
-  { code: "code_DESC", name: "Ma giam dan" },
-  { code: "code_ASC", name: "Ma tang dan" },
+  { code: "createdAt_DESC", name: "Ngày tạo giảm dần" },
+  { code: "createdAt_ASC", name: "Ngày tạo tăng dần" },
+  { code: "orderNo_DESC", name: "Mã đơn hàng giảm dần" },
+  { code: "orderNo_ASC", name: "Mã đơn hàng tăng dần" },
+  { code: "total_DESC", name: "Tổng tiền giảm dần" },
+  { code: "total_ASC", name: "Tổng tiền tăng dần" }
 ];
 
+const sizes = ["S", "M", "L", "XL"];
+const colors = ["red", "blue", "green", "yellow"];
 export async function listOrder(req, res) {
   const search = req.query?.search;
   const pageSize = !!req.query?.pageSize ? parseInt(req.query.pageSize) : 5;
   const page = !!req.query?.page ? parseInt(req.query.page) : 1;
   const skip = (page - 1) * pageSize;
   let sort = !!req.query?.sort ? req.query.sort : null;
-  const sortObjects = [
-    { code: "name_DESC", name: "Ten giam dan" },
-    { code: "name_ASC", name: "Ten tang dan" },
-    { code: "code_DESC", name: "Ma giam dan" },
-    { code: "code_ASC", name: "Ma tang dan" },
-  ];
   let filters = {
     deleteAt: null,
   };
   if (search && search.length > 0) {
     filters.orderNo = search;
   }
-
   if (!sort) {
     sort = { createdAt: -1 };
   } else {
@@ -37,9 +36,10 @@ export async function listOrder(req, res) {
     const countOrders = await OrderModel.countDocuments(filters);
     const orders = await OrderModel.find(filters)
       .skip(skip)
+      .populate("orderItems.product", "name code")
       .limit(pageSize)
       .sort(sort);
-
+    // res.send(orders);
     res.render("pages/orders/list", {
       title: "Orders",
       orders: orders,
@@ -54,151 +54,139 @@ export async function listOrder(req, res) {
     res.send("Loi lay danh sach");
   }
 }
-// export async function renderpageCreateCategory(req, res) {
-//   let err = {}; // Khai báo biến err
-//   res.render("pages/categories/form", {
-//     title: "Create categories",
-//     mode: "Create",
-//     category: {},
-//     err,
-//   });
-// }
+export async function renderPageSimulateCreateOrder(req, res) {
+  const products = await ProductModel.find({ deleteAt: null }, "code name price sizes colors");
+  let err = {}; // Khai báo biến err
+  res.render("pages/orders/form", {
+    title: "Create orders",
+    mode: "Create",
+    order: {},
+    products: products,
+    err,
+  });
+}
 export async function createOrder(req, res) {
-  const { discount, status, orderItems } = req.body;
+  const { discount, orderItems, billingAdress } = req.body;
   let subTotal = 0,
     total = 0,
-    numericalOrder = 1;
+    numericalOrder = 0;
   const lastOrder = await OrderModel.findOne().sort({ createdAt: -1 });
-  if (lastOrder) {
-    numericalOrder = lastOrder.numericalOrder + 1;
+  if (lastOrder && lastOrder.numericalOrder != null) {
+    numericalOrder = parseInt(lastOrder.numericalOrder) + 1;
+  } else {
+    numericalOrder = 1;
   }
-
   const orderNo = "order-" + numericalOrder;
-  if (orderItems.length > 0) {
-    for (let orderItem of orderItems) {
-      subTotal += orderItem.price * orderItem.quantity;
-    }
-  }
   total = (subTotal * (100 - discount)) / 100;
   try {
-    const rs = await CategoryModel.create({
+    const rs = await OrderModel.create({
       orderNo: orderNo,
       discount: discount,
       total: total,
-      status: status,
+      status: "created",
       orderItems: orderItems,
-      numericalOrder: numericalOrder,
       createAt: new Date(),
+      billingAdress: billingAdress,
     });
     res.send(rs);
   } catch (error) {
     console.log("error; ", error);
   }
 }
+export async function updateStatusDelivering(req, res) {
+  const { orderId, status } = req.body; // Lấy trạng thái từ body
+  try {
+    const currentOrder = await OrderModel.findOne({ _id: new ObjectId(orderId) });
+    if (currentOrder) {
+      await OrderModel.updateOne(
+        { _id: new ObjectId(orderId) },
+        {
+          status: status, // cập nhật trạng thái theo yêu cầu
+          updatedAt: new Date(),
+        }
+      );
+      // res.send({
+      //   success: true,
+      //   message: `Cập nhật trạng thái đơn hàng thành công: ${status}`,
+      // });
+      res.redirect("/orders");
+    } else {
+      res.send({
+        success: false,
+        message: "Không tìm thấy đơn hàng",
+      });
+    }
+  } catch (error) {
+    res.send({
+      success: false,
+      message: "Có lỗi xảy ra khi cập nhật trạng thái đơn hàng",
+    });
+  }
+}
+export async function simulatorCreateOrder(req, res) {
+  let {
+    discount, itemSelect, quantity, itemColor, itemSize, itemPrice,
+    billingName, billingEmail, billingPhoneNumber, billingAdress, billingDistrict, billingCity
+  } = req.body;
 
-// export async function renderpageUpdateCategory(req, res) {
-//   try {
-//     const { id } = req.params;
-//     const category = await CategoryModel.findOne({
-//       _id: new ObjectId(id),
-//       deleteAt: null,
-//     });
-//     if (category) {
-//       res.render("pages/categories/form", {
-//         title: "update categories",
-//         mode: "Update",
-//         category: category,
-//         err: {},
-//       });
-//     } else {
-//       res.send("Ko tim thay");
-//     }
-//   } catch (e) {
-//     res.send("404 Error");
-//   }
-// }
-// export async function updateCategory(req, res) {
-//   const { ...data } = req.body;
-//   const { id } = req.params;
-//   try {
-//     const category = await CategoryModel.findOne({
-//       code: data.code,
-//       _id: { $ne: new ObjectId(id) }, // Loại trừ ID hiện tại
-//       deleteAt: null,
-//     });
+  let subTotal = 0,
+    total = 0,
+    numericalOrder = 1;
 
-//     if (category) {
-//       throw "code";
-//     }
+  const lastOrder = await OrderModel.findOne().sort({ createdAt: -1 });
+  if (lastOrder) {
+    numericalOrder = lastOrder.numericalOrder + 1;
+  }
+  const orderNo = "order-" + numericalOrder;
 
-//     await CategoryModel.updateOne(
-//       { _id: new ObjectId(id) },
-//       {
-//         ...data,
-//         updateAt: new Date(),
-//       }
-//     );
+  const billingAddress = {
+    name: billingName,
+    email: billingEmail,
+    phoneNumber: billingPhoneNumber,
+    address: billingAdress,
+    district: billingDistrict,
+    city: billingCity,
+  };
 
-//     res.redirect("/categories");
-//   } catch (error) {
-//     let err = {};
-//     if (error === "code") {
-//       err.code = "Mã sản phẩm đã tồn tại";
-//       // Lấy thông tin danh mục cũ để hiển thị lại ID cũ
-//       const existingCategory = await CategoryModel.findById(id);
-//       if (existingCategory) {
-//         data.oldId = existingCategory._id; // Thêm ID cũ vào data để hiển thị
-//       }
-//     }
+  if (!Array.isArray(itemSelect)) {
+    itemSelect = [itemSelect];
+    quantity = [quantity];
+    itemColor = [itemColor];
+    itemSize = [itemSize];
+    itemPrice = [itemPrice];
+  }
 
-//     if (error.name === "ValidationError") {
-//       Object.keys(error.errors).forEach((key) => {
-//         err[key] = error.errors[key].message;
-//       });
-//       console.log("err", err);
-//     }
+  const orderItems = itemSelect.map((productId, index) => ({
+    productId: new ObjectId(productId),
+    quantity: parseInt(quantity[index]),
+    price: parseFloat(itemPrice[index]),
+    color: itemColor[index],
+    size: itemSize[index],
+  }));
 
-//     res.render("pages/categories/form", {
-//       title: "Cập nhật danh mục",
-//       mode: "Update",
-//       category: { ...data, id, oldId: data.oldId }, // Truyền ID cũ vào đây
-//       err,
-//     });
-//   }
-// }
+  if (orderItems.length > 0) {
+    for (let orderItem of orderItems) {
+      subTotal += orderItem.price * orderItem.quantity;
+    }
+  }
 
-// export async function renderpageDeleteCategory(req, res) {
-//   try {
-//     const { id } = req.params;
-//     const category = await CategoryModel.findOne({
-//       _id: new ObjectId(id),
-//       deleteAt: null,
-//     });
-//     if (category) {
-//       res.render("pages/categories/form", {
-//         title: "Delete categories",
-//         mode: "Delete",
-//         category: category,
-//         err: {},
-//       });
-//     } else {
-//       res.send("Ko tim thay");
-//     }
-//   } catch (e) {
-//     res.send("404 Error");
-//   }
-// }
-// export async function deleteCategory(req, res) {
-//   const { id } = req.body;
-//   try {
-//     await CategoryModel.deleteOne(
-//       { _id: new ObjectId(id) },
-//       {
-//         updateAt: new Date(),
-//       }
-//     );
-//     res.redirect("/categories");
-//   } catch (e) {
-//     res.send("False");
-//   }
-// }
+  total = (subTotal * (100 - discount)) / 100;
+
+  try {
+    const rs = await OrderModel.create({
+      orderNo: orderNo,
+      discount: parseFloat(discount),
+      total: total,
+      status: "created",
+      orderItems: orderItems,
+      numericalOrder: numericalOrder,
+      createdAt: new Date(),
+      billingAdress: billingAddress,
+    });
+    res.redirect("/orders");
+  } catch (error) {
+    console.log("error: ", error);
+    res.status(500).send("Có lỗi xảy ra khi tạo đơn hàng");
+  }
+}
+

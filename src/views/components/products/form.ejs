@@ -100,7 +100,7 @@
                         <input 
                         name="images"
                         type="text"
-                        value="<%=typeof product?.images ==='object' ? product?.images[0] : ''%>" 
+                        value="<%=typeof product?.images ==='object' ? product?.images[0] : 'lỗi hình ảnh'%>" 
                         class="form-control" 
                         id="image" 
                         placeholder="nhập link hình ảnh"
@@ -152,11 +152,13 @@
                             type="checkbox" 
                             <% if (product?.active) { %> checked <% } %> 
                             data-toggle="toggle" 
-                            data-onstyle="default" 
+                            data-on="On" 
+                            data-off="Off" 
+                            data-onstyle="success" 
+                            data-offstyle="danger" 
                             value="true"
                         >
-                    </div>
-
+                    </div>                                       
                      <!-- description -->
                      <div class="form-group <%= err?.description && 'has-error has-feedback' %>">
                         <label for="description">Mô tả</label>
@@ -175,13 +177,11 @@
                      </div>
                      <!-- categoryId -->
                      <div class="form-group <%= err?.category && 'has-error has-feedback' %>">
-
-                        
                         <label for="category">Category</label>
                         <select class="form-control form-control max-w-20 mb-4px" name="categoryId" id="defaultSelect">
-                            <% (product.categories || []).forEach(function(category, index){ %>
+                            <% (categories || []).forEach(function(category, index){ %>
                                 <%if(category.id=== product?.categoryIdString){%>
-                                    <option value="<%=category._id%>" selected><%=category.name%></option>
+                                    <option value="<%=category._id%>"><%=category.name%></option>
                                     <%}else{%>
                                         <option value="<%=category._id%>" ><%=category.name%></option>
                                         <%}%>                            

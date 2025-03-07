@@ -8,10 +8,11 @@ export async function listCategory(req, res) {
     const skip = (page - 1) * pageSize;
     let sort = !!req.query?.sort ? req.query.sort : null;
     const sortObjects = [
-      { code: "name_DESC", name: "Ten giam dan" },
-      { code: "name_ASC", name: "Ten tang dan" },
-      { code: "code_DESC", name: "Ma giam dan" },
-      { code: "code_ASC", name: "Ma tang dan" },
+    { code: '', name: "Sắp xếp"},
+    { code: "name_DESC", name: "Ten giam dan" },
+    { code: "name_ASC", name: "Ten tang dan" },
+    { code: "code_DESC", name: "Ma giam dan" },
+    { code: "code_ASC", name: "Ma tang dan" },
     ];
     const filters = {
       deleteAt: null,
@@ -109,10 +110,15 @@ export async function updateCategory(req, res) {
     const { ...data } = req.body;
     const { id } = req.params;
     try {
-        const category = await CategoryModel.findOne({ code: data.code, deleteAt: null });
-       if(category){
-           throw("code");
-       }
+        const category = await CategoryModel.findOne({ 
+            code: data.code, 
+            deleteAt: null, 
+            _id: { $ne: new ObjectId(id) } // Loại trừ chính danh mục hiện tại
+        });
+        if (category) {
+            throw ("code");
+        }
+        
         await CategoryModel.updateOne(
             { _id: new ObjectId(id) },
             {
@@ -123,7 +129,7 @@ export async function updateCategory(req, res) {
     } catch (error) {
         let err = {};
         if (error === "code") {
-            err.code = "Ma san pham ton tai";
+            err.code = "Mã sản phẩm đã tồn tại";
         }
         if (error.name === "ValidationError") {
             Object.keys(error.errors).forEach((key) => {

@@ -11,18 +11,14 @@
             <div class="form-group" style="width: 200px">
                 <label class="form-label" for="defaultSelect">Sắp xếp</label>
                 <select class="form-select" id="defaultSelect" onchange="changeSort(event)">
-                    <% sortObjects.forEach(function(sortObject,index){ %>
-                        <%if(sortObject.code === sort){%>
-                            <option value="<%=sortObject.code%>" selected><%=sortObject.name%></option>
-                        <%}%>
-                        <%if(sortObject.code !== sort){%>
-                            <option value="<%=sortObject.code%>"><%=sortObject.name%></option>
-                        <%}%>
-                   <% }) %>
+                    <% sortObjects.forEach(function(sortObject) { %>
+                        <option value="<%= sortObject.code %>" <%= sortObject.code === sort ? "selected" : "" %>>
+                            <%= sortObject.name %>
+                        </option>
+                    <% }) %>
                 </select>
             </div>
         </div>
-
         <% if(categories && categories.length> 0) { %>
             <div class="card rounded-3 border-0 shadow-sm">
                 <div class="card-body p-0">
@@ -76,7 +72,6 @@
                                 <% }); %>
                             </select>
                         </div>
-
                         <!-- Pagination -->
                         <nav aria-label="Page navigation">
                             <ul class="pagination mb-0">

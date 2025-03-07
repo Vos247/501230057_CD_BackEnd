@@ -16,7 +16,6 @@ const productSchema = new Schema(
       type: Number,
       required: [true, "bat buoc nhap gia"],
     },
-
     searchString: {
       type: String,
       required: [true, "bat buoc nhap tu khoa"],
@@ -29,7 +28,7 @@ const productSchema = new Schema(
       type: [String],
       enum: ["red", "blue", "green", "yellow"],
     },
-    active: String,
+    active: Boolean,
     description: String,
     information: String,
     images: [String],

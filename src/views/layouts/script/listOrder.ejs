@@ -89,4 +89,21 @@
         let url = "/orders?" + queryString.join("&&")
         window.location.href = url; // Chuyển hướng đến URL mới
     }
+    function changeStatus(orderId, status) {
+  $.post(
+    "http://localhost:5100/orders/updateStatusDelivering",
+    {
+      orderId: orderId,
+      status: status, // Gửi thêm trạng thái
+    },
+    function (data) {
+      const { success, message } = data;
+      if (success === true) {
+        window.location.href = "/orders";
+      } else {
+        alert(message);
+      }
+    }
+  );
+    }
 </script>

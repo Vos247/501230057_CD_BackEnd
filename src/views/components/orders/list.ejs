@@ -2,34 +2,35 @@
     <div class="container-fluid">
       <div class="flex justify-content-between mb-2" style="display: flex">
         <h4 class="page-title">Danh sách đơn hàng</h4>
-        <a class="btn btn-primary mb-2" href="/products/create">Tạo </a>
+        <a class="btn btn-primary mb-2" href="/orders/create">Tạo giỏ hàng</a>
       </div>
-      <div class="form-group">
-        <label for="defaultSelect">Sap xep</label>
-        <select
-          class="form-control form-control"
-          id="defaultSelect"
-          onchange="changeSort(event)"
-        >
-          <% sortObjects.forEach(function(sortObject, index){ %>
-          <%if(sortObject.code === sort){%>
-          <option value="<%=sortObject.code%>"><%=sortObject.name%></option>
-          <%}%> <%if(sortObject.code !== sort){%>
-          <option value="<%=sortObject.code%>"><%=sortObject.name%></option>
-          <%}%> <%})%>
-        </select>
-      </div>
+      <div class="d-flex justify-content-end mb-4">
+        <div class="form-group" style="width: 200px">
+            <label class="form-label" for="defaultSelect">Sắp xếp</label>
+            <select class="form-select" id="defaultSelect" onchange="changeSort(event)">
+                <% sortObjects.forEach(function(sortObject,index){ %>
+                    <%if(sortObject.code === sort){%>
+                        <option value="<%=sortObject.code%>" selected><%=sortObject.name%></option>
+                    <%}%>
+                    <%if(sortObject.code !== sort){%>
+                        <option value="<%=sortObject.code%>"><%=sortObject.name%></option>
+                    <%}%>
+               <% }) %>
+            </select>
+        </div>
+    </div>
       <div class="card">
         <div class="card-body">
-          <table class="table table-head-bg-success">
+          <table class="table table-head-bg-default">
             <thead>
               <tr>
                 <th scope="col">Mã hóa đơn</th>
                 <th scope="col">Sản phẩm</th>
+                <th scope="col">Giá</th>
                 <th scope="col">Giảm giá</th>
                 <th scope="col">Trạng thái</th>
                 <th scope="col">Tổng hóa đơn</th>
-                <th scope="col"></th>
+                <th scope="col">Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -38,15 +39,50 @@
                 <td><%=order.orderNo%></td>
                 <td>
                   <div class="form-group flex gap-2">
-                    <label for="image">Danh sách</label>
                     <% order.orderItems.forEach(function(orderItem, index){%>
-                    <p><%= orderItem.quantity %>_<%= orderItem.productCode %></p>
+                    <p><%= orderItem.quantity %>x <%= orderItem?.product?.name %></p>
+                    <%})%>
+                  </div>
+                </td>
+                <td>
+                  <div class="form-group flex gap-2">
+                    <% order.orderItems.forEach(function(orderItem, index){%>
+                    <p><%=orderItem.priceFormatString%></p>
                     <%})%>
                   </div>
                 </td>
                 <td><%=order.discount%>%</td>
-                <td><%=order.status%></td>
-                <td><%=order.total%></td>
+                <td class="<%=order.status%>">
+                  <%=order.status%>
+                </td>
+                <td><%=order.totalFormatString%> VND</td>
+                <td>
+                  <% if (order.status !== "cancelled" && order.status !== "completed") { %>
+                    <% if (order.status === "delivering") { %>
+                      <form action="/orders/updateStatusDelivering" method="POST">
+                        <input type="hidden" name="orderId" value="<%= order._id %>">
+                        <input type="hidden" name="status" value="completed">
+                        <button class="btn btn-success">Hoàn thành</button>
+                      </form>
+                    <% } else { %>
+                      <form action="/orders/updateStatusDelivering" method="POST">
+                        <input type="hidden" name="orderId" value="<%= order._id %>">
+                        <input type="hidden" name="status" value="delivering">
+                        <button class="btn btn-info">Giao hàng</button>
+                      </form>
+                      <form action="/orders/updateStatusDelivering" method="POST">
+                        <input type="hidden" name="orderId" value="<%= order._id %>">
+                        <input type="hidden" name="status" value="completed">
+                        <button class="btn btn-success">Hoàn thành</button>
+                      </form>
+                      <form action="/orders/updateStatusDelivering" method="POST">
+                        <input type="hidden" name="orderId" value="<%= order._id %>">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button class="btn btn-danger">Hủy đơn</button>
+                      </form>
+                    <% } %>
+                  <% } %>              
+                </td>
               </tr>
               <% }); %>
             </tbody>
@@ -91,21 +127,19 @@
               </a>
             </li>
           </ul>
-          <div class="form-group">
-            <label for="defaultSelect">Page Size</label>
-            <select
-              class="form-control form-control"
-              id="defaultSelect"
-              onchange="changePageSize(event)"
-            >
-              <% [5,10,20,30,50].forEach(function(pageSizeOption, index){ %>
-              <%if(pageSizeOption === pageSize){ %>
-              <option selected><%=pageSizeOption%></option>
-              <%}%> <%if(pageSizeOption !== pageSize){ %>
-              <option><%=pageSizeOption%></option>
-              <%}%> <% }); %>
+          <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0" for="defaultSelect">Page Size</label>
+            <select class="form-select" style="width: 80px" id="defaultSelect" onchange="changePageSize(event)">
+                <% [5,10,20,30,50].forEach(function(pageSizeOption,index){ %>  
+                    <%if(pageSizeOption === pageSize) {%>
+                        <option selected><%= pageSizeOption %></option>
+                    <%}%>   
+                    <%if(pageSizeOption !== pageSize) {%>
+                        <option><%= pageSizeOption %></option>
+                    <%}%>  
+                <% }); %>
             </select>
-          </div>
+        </div>
         </div>
       </div>
     </div>

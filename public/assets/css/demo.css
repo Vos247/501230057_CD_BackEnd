@@ -1,3 +1,15 @@
+.cancelled{
+	color: #ff0000;
+}
+.completed{
+	color: #00ff00;
+}
+.delivering{
+	color: #ffff00;
+}
+.created{
+	color: #0000ff;
+}
 .update-pro{
 	margin: 15px 25px;}
 

@@ -3,6 +3,7 @@ import CategoryModel from "../models/categoryModel.js";
 import { ObjectId } from "mongodb";
 import { removeVietnameseAccents } from "../common/index.js";
 const sortObjects = [
+  {code: "", name: "Sắp xếp"},
   { code: "name_DESC", name: "Ten giam dan" },
   { code: "name_ASC", name: "Ten tang dan" },
   { code: "code_DESC", name: "Ma giam dan" },
@@ -68,7 +69,6 @@ export async function renderpageCreateProduct(req, res) {
 }
 export async function createProduct(req, res) {
   const categories = await CategoryModel.find({ deletedAt: null });
-
   const {
     sizes: productSize,
     colors: productColor,
@@ -180,6 +180,7 @@ export async function updateProduct(req, res) {
       { _id: new ObjectId(id) },
       {
         ...data,
+        active: data.active || false,
         updateAt: new Date(),
       }
     );
